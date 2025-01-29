@@ -35,38 +35,40 @@ NEW VERSION
 _______________________________________________________________________________________________________________________________________________________________________________________
 
 import math
+import random
 
-# Given RSA parameters
+# TWO RSA primes
 p = 163157151149139137
 q = 115578717622022981
 
 # Compute n and Euler's totient function φ(n)
-n = p * q
-f = (p - 1) * (q - 1)  # φ(n)
-e = 65537  # Public key
+n = p*q
+f = (p-1)*(q-1) # φ(n)
 
-# Ensure e and φ(n) are coprime
-print("GCD(f, e):", math.gcd(f, e))  # Should be 1 for RSA to work
+# Function to find a valid public exponent e
+def find_e(f):
+    while True:
+        e = random.randrange(3, f, 2)  # Pick a random odd number (avoids even factors)
+        if math.gcd(e, f) == 1:  # Check if  coprime
+            return e  
+
+e = find_e(f)
+print(f"Chosen public key e: {e}")
+
 
 # Compute d using the modular inverse calculation d*e(mod(f)=1
 d = pow(e, -1, f)  # d=(e^-1)(mod(f))
 
-print(f'The value of d is {d}')
+print(f'The value of d: {d}')
 
 # Sample message to encrypt
-sample = 12345
+message = 400
+print(f'message: {message}')
 
-# Encryption function
-def encrypt(plain_text, public_key, modulus):
-    return pow(plain_text, public_key, modulus)
 
-# Decryption function
-def decrypt(encrypted_message, private_key, modulus):
-    return pow(encrypted_message, private_key, modulus)
-
-# Encrypt and decrypt the sample message
-enc_m = encrypt(sample, e, n)
-dec_m = decrypt(enc_m, d, n)
+# Encrypt and decrypt the message
+enc_m = pow(message, e, n)
+dec_m = pow(enc_m, d, n)
 
 print("Encrypted message:", enc_m)
 print("Decrypted message:", dec_m)  
