@@ -56,7 +56,7 @@ e = find_e(f)
 print(f"Chosen public key e: {e}")
 
 
-# Compute d using the modular inverse calculation d*e(mod(f)=1
+# Compute d using the modular inverse calculation from d*e(mod(f))==1
 d = pow(e, -1, f)  # d=(e^-1)(mod(f))
 
 print(f'The value of d: {d}')
