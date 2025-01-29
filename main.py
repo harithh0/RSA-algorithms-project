@@ -2,7 +2,7 @@ import math
 
 p = 163157151149139137
 q = 115578717622022981
-
+"""
 
 n = p * q
 f = (p - 1) * (q - 1)
@@ -33,7 +33,7 @@ print(dec_m)
 ______________________________________________________________________________________________________________________________________________________________________________________
 NEW VERSION
 _______________________________________________________________________________________________________________________________________________________________________________________
-
+"""
 import math
 import random
 
@@ -62,7 +62,7 @@ d = pow(e, -1, f)  # d=(e^-1)(mod(f))
 print(f'The value of d: {d}')
 
 # Sample message to encrypt
-message = 400
+"""message = 400
 print(f'message: {message}')
 
 
@@ -71,4 +71,21 @@ enc_m = pow(message, e, n)
 dec_m = pow(enc_m, d, n)
 
 print("Encrypted message:", enc_m)
-print("Decrypted message:", dec_m)  
+print("Decrypted message:", dec_m)"""  
+
+def encrypter(e, n):
+    enc_m = []
+    message = input("Please enter the message you want to encrypt: ")
+    Ascii_values = [ord(c) for c in message]
+    print(Ascii_values)
+    for i in Ascii_values:
+        enc_w = pow(i, e, n)
+        enc_m.append(enc_w)
+    return enc_m
+
+print(encrypter(e, n))
+    
+
+
+
+     
