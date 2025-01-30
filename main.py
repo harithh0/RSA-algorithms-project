@@ -84,6 +84,23 @@ def encrypter(e, n):
     return enc_m
 
 print(encrypter(e, n))
+
+#it works but there is an error with the encryption causing the decryptor to not work 
+def decrypter(d, n):
+    
+    dec_m = []
+    crypted_m = input("Please enter encrypted message: ")
+    crypted_list = crypted_m.split()
+    for i in crypted_list:
+        dec_w = pow(int(i), d, n)
+        print(dec_w)
+        dec_m.append(chr(dec_w))
+        print(dec_m)
+    return dec_m
+print(decrypter(d, n)) 
+
+
+
     
 
 
