@@ -38,7 +38,7 @@ def encrypter(e, n, block_size=4):
 
     message = input("Please enter the message you want to encrypt: ")
 
-    # turns each character into binary form with leading 0s if needed
+    # turns each character into binary form with leading 1s if needed
     binary_values = [format(ord(c), "08b") for c in message]
 
 
