@@ -41,13 +41,10 @@ def encrypter(e, n, block_size=4):
     # turns each character into binary form with leading 1s if needed
     binary_values = [format(ord(c), "08b") for c in message]
 
-
     # adds null values (0) at the end of list to make it have correct amount of blocks if needed
     # each block must have 4 characters or 4 bytes (32 bits) if short then it will add 0s
     while len(binary_values) % block_size != 0:
         binary_values.append(format(0, "08b"))
-
-
 
     full_ciphertext = ""
 
@@ -63,7 +60,6 @@ def encrypter(e, n, block_size=4):
 
         # encrypts this binary string called enc_w
         enc_w = pow(int(block_to_encrypt_bytes), e, n)
-
 
         """
         - adds headers to the binary string such as length of encrypted binary string and a seperator which will be "1".
@@ -101,8 +97,8 @@ def find_block(encrypted_message):
         encrypted_message[current_first_index:current_last_index]
     )
     current_block = encrypted_message[
-    current_last_index : (current_block_true_size + current_last_index)
-]
+        current_last_index : (current_block_true_size + current_last_index)
+    ]
     if current_block_true_size != 35:
         filler_ends_index = current_block_true_size + 2 + (35 - current_block_true_size)
         return current_block, encrypted_message[filler_ends_index:]
@@ -142,9 +138,10 @@ def decrypt(encrypted_message, private_key):
     # after extracting all the blocks, we will loop to each block and decrypt it from ciphertext -> binary -> then change it to ascii
     for block in blocks:
         decrypted = pow(int(block), private_key, n)
+        print("Decrypted before conversion: ", decrypted)
         decrypted = str(decrypted)
         if len(decrypted) % 8 != 0:
-            decrypted = f"0{decrypted}"
+            decrypted = decrypted.zfill(32)
         print("decrypted: ", decrypted)
         for i in range(0, len(decrypted), 8):
             byte = decrypted[i : i + 8]
@@ -157,6 +154,7 @@ def decrypt(encrypted_message, private_key):
     # print("left overs", leftover)
     # print(blocks)
     return plaintext
+
 
 encrypted_m = encrypter(e, n)
 decrypted_m = decrypt(encrypted_m, d)
