@@ -34,19 +34,24 @@ def encrypter(e, n, block_size=4):
 
     returns encrypted message in string format: "hello world!" -> "10101s..." -> "29174194..."
     """
+    error = 0
 
     enc_m = []
-    message = input("Please enter the message you want to encrypt: ")
-
+    while (error == 0): #allows user to reenter message instead of ending the program (can change if wanted)
+        message = input("Please enter the message you want to encrypt: ")
+    
     # turns each character into binary form with leading 1s if needed
-    binary_values = []
-    for c in message:
-        ascii_to_binary_string = format(ord(c), "08b")
-        if len(ascii_to_binary_string) > 8:  # special ascii character
-            raise ValueError("Please enter ASCII only characters")
+        binary_values = []
+        for c in message:
+            ascii_to_binary_string = format(ord(c), "08b")
+            if len(ascii_to_binary_string) > 8:  # special ascii character
+                print("Please enter ASCII only charecters")
+                break
+                
 
-        else:
-            binary_values.append(ascii_to_binary_string)
+            else:
+                error = 1
+                binary_values.append(ascii_to_binary_string)
 
     # adds null values (0) at the end of list to make it have correct amount of blocks if needed
     # each block must have 4 characters or 4 bytes (32 bits) if short then it will add 0s
