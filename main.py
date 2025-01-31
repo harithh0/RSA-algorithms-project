@@ -34,12 +34,19 @@ def encrypter(e, n, block_size=4):
 
     returns encrypted message in string format: "hello world!" -> "10101s..." -> "29174194..."
     """
-    enc_m = []
 
+    enc_m = []
     message = input("Please enter the message you want to encrypt: ")
 
     # turns each character into binary form with leading 1s if needed
-    binary_values = [format(ord(c), "08b") for c in message]
+    binary_values = []
+    for c in message:
+        ascii_to_binary_string = format(ord(c), "08b")
+        if len(ascii_to_binary_string) > 8:  # special ascii character
+            raise ValueError("Please enter ASCII only characters")
+
+        else:
+            binary_values.append(ascii_to_binary_string)
 
     # adds null values (0) at the end of list to make it have correct amount of blocks if needed
     # each block must have 4 characters or 4 bytes (32 bits) if short then it will add 0s
@@ -128,7 +135,7 @@ def decrypt(encrypted_message, private_key):
     - loops over while there are still blocks inside the complete encrypted message and extracts the encrypted block without the headers
     - it looks something like this:
         # comp|lete|_enc|rypt|ed_m|ess|age... -> |lete|_enc|rypt|ed_m|ess|age... -> |_enc|rypt|ed_m|ess|age... -> and so on.. until we get 
-        through the whole message and there are no more blocks.
+        through the whole message until there are no more blocks.
     """
     while len(other_blocks) != 0:
         current_block, left_blocks = find_block(other_blocks)
@@ -156,7 +163,16 @@ def decrypt(encrypted_message, private_key):
     return plaintext
 
 
-encrypted_m = encrypter(e, n)
+try:
+    encrypted_m = encrypter(e, n)
+except ValueError as e:  # if extened ASCII character is entered
+    print(e)
+    exit()
+
+# while encrypted_m == None:
+#     encrypted_m = encrypter(e, n)
+
+
 decrypted_m = decrypt(encrypted_m, d)
 print("encrypted:", encrypted_m)
 print("decrypted:", decrypted_m)
