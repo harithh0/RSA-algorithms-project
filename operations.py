@@ -1,6 +1,3 @@
-from generate_rsa import generate_rsa
-
-
 def encrypt_message(message, public_key, n_value, block_size=4):
     """
     encrypts user provided text/string
