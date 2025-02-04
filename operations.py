@@ -1,3 +1,8 @@
+import hashlib
+
+from generate_rsa import generate_rsa
+
+
 def encrypt_message(message, public_key, n_value, block_size=4):
     """
     encrypts user provided text/string
@@ -137,5 +142,52 @@ def decrypt_message(encrypted_message, private_key, n_value, block_size=4):
     return plaintext
 
 
-# print(encrypt_message("hey how are you?", e, n))
-# print(decrypt_message(encrypt_message("hey how are you?", e, n), d))
+def convert_str_to_decmial(string):
+    message_in_decmial = ""
+    for c in string:
+        message_in_decmial += format(ord(c))
+
+    return int(message_in_decmial)
+
+
+def sign_message(plaintext_message, private_key, n_value):
+
+    message_in_decmial = convert_str_to_decmial(plaintext_message)
+
+    # binary_to_decmial = int(plaintext_message, 2)
+
+    # in real life, we would sign the hash of the message instead of the message itself
+    # message_hash = hashlib.sha256(str(binary_to_decmial).encode()).hexdigest()
+    # message_hash_int = int(message_hash, 16)
+
+    message_signature = pow(message_in_decmial, private_key, n_value)
+    return message_signature
+
+
+def verify_message(plaintext_message, message_signature, public_key, n_value):
+
+    message_in_decmial = convert_str_to_decmial(plaintext_message)
+
+    # binary_to_decmial = int(plaintext_message, 2)
+    # message_hash = hashlib.sha256(str(binary_to_decmial).encode()).hexdigest()
+    # message_hash_int = int(message_hash, 16)
+
+    # decrypt the signature using public key
+    operation = pow(message_signature, public_key, n_value)
+    is_valid = operation == message_in_decmial
+    return is_valid
+
+
+# testing
+# private_key, public_key, n_value = generate_rsa()
+
+# message_signature = sign_message("hello", private_key, n_value)
+# is_valid = verify_message(
+#     "hello",
+#     message_signature,
+#     public_key,
+#     n_value,
+# )
+
+# print(message_signature)
+# print(is_valid)

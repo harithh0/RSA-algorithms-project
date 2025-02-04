@@ -8,6 +8,7 @@ from generate_rsa import generate_rsa
 public_key, private_key, n_value = generate_rsa()
 
 encrypted_messages_list = []
+signed_messages_list = []
 
 
 def open_public_user_window():
@@ -31,14 +32,100 @@ def open_public_user_window():
     s.pack(pady=10)
 
     button = tk.Button(
-        master=public_user_window, text="2. Authenticate a digital signature"
+        master=public_user_window,
+        text="2. Authenticate a digital signature",
+        command=lambda: open_authenticate_digital_signature(public_user_window),
     )
     button.config(bg="#E4E2E2", fg="#000")
     button.pack(pady=10)
 
-    button1 = tk.Button(master=public_user_window, text="3. Exit", command=main.quit)
-    button1.config(bg="#E4E2E2", fg="#000")
+    button1 = tk.Button(
+        master=public_user_window, text="3. exit", command=public_user_window.destroy
+    )
+    button1.config(bg="#e4e2e2", fg="#000")
     button1.pack(pady=10)
+
+
+def open_authenticate_digital_signature(parent_window):
+    parent_window.destroy()
+    auth_message_window = tk.Toplevel(main)
+    auth_message_window.title("Decrypt message")
+    auth_message_window.geometry("400x300")
+    auth_message_window.config(bg="#E4E2E2")
+    label = tk.Label(
+        auth_message_window,
+        text="The following messages are available:",
+        bg="#E4E2E2",
+        fg="#000",
+    )
+    label.pack(pady=10)
+
+    text_box = tk.Text(auth_message_window, height=10, width=40)
+    text_box.pack(pady=10)
+
+    # Insert all encrypted messages into the text box
+    index = 0
+    for message in signed_messages_list:
+        message_json = json.loads(message)
+        message_content = message_json["message"]
+        messag_signature = message_json["signature"]
+        text_box.insert(tk.END, f"{index + 1}. {message_content}\n")
+        index += 1
+
+    text_box.config(state=tk.DISABLED)  # Make the text box read-only
+
+    def get_message_values_from_list(index_number):
+        message = signed_messages_list[index_number - 1]
+        message_json = json.loads(message)
+        message_content = message_json["message"]
+        message_signature = message_json["signature"]
+        return message_content, message_signature
+
+    def verify_and_display():
+        index_chosen = int(index_selected_box.get())
+        content, signature = get_message_values_from_list(index_chosen)
+        is_message_valid = operations.verify_message(
+            content, int(signature), public_key, n_value
+        )
+
+        if is_message_valid == True:
+            messagebox.showinfo(
+                "Message Verification Passed",
+                "Signature is valid.",
+            )
+        elif is_message_valid == False:
+            messagebox.showerror(
+                "Message Verification Failed",
+                "The message signature does not match correctly",
+            )
+        # Create a new window to display the decrypted message
+        # verify_message_window = tk.Toplevel(decrypt_message_window)
+        # verify_message_window.title("Decrypted Message")
+        # verify_message_window.geometry("400x300")
+        # verify_message_window.config(bg="#E4E2E2")
+
+        # label = tk.Label(
+        #     decrypted_message_window,
+        #     text="Decrypted Message:",
+        #     bg="#E4E2E2",
+        #     fg="#000",
+        # )
+        # label.pack(pady=10)
+
+        # decrypted_text_box = tk.Text(decrypted_message_window, height=10, width=40)
+        # decrypted_text_box.pack(pady=10)
+        # decrypted_text_box.insert(tk.END, decrypted_message)
+        # decrypted_text_box.config(state=tk.DISABLED)  # Make the text box read-only
+
+    verify_button = tk.Button(
+        auth_message_window, text="Verify!", command=verify_and_display
+    )
+
+    index_selected_box = tk.Entry(auth_message_window, width=10)
+    index_selected_box.pack(padx=5)
+
+    verify_button.config(bg="#E4E2E2", fg="#000")
+    verify_button.pack(padx=10)
 
 
 def open_send_enc_message(parent_window):
@@ -191,6 +278,74 @@ def open_decrypt_message(parent_window):
     decrypt_button.pack(padx=10)
 
 
+def open_sign_message(parent_window):
+    parent_window.destroy()
+    sign_message_window = tk.Toplevel(main)
+    sign_message_window.title("Sign Message")
+    sign_message_window.geometry("400x300")
+    sign_message_window.config(bg="#E4E2E2")
+    label = tk.Label(
+        sign_message_window,
+        text="Enter your message to sign:",
+        bg="#E4E2E2",
+        fg="#000",
+    )
+    label.pack(pady=10)
+
+    text_box = tk.Text(sign_message_window, height=10, width=40)
+    text_box.pack(pady=10)
+
+    def sign_and_send():
+        message = text_box.get("1.0", tk.END)
+        message = message.strip()
+        message_signature = operations.sign_message(message, private_key, n_value)
+        signed_messages_list.append(
+            f'{{"message" : "{message}", "signature" : "{message_signature}"}}'
+        )
+        messagebox.showinfo(
+            "Operation successful", "Message has been successfully signed and sent!"
+        )
+
+    sign_button = tk.Button(
+        sign_message_window, text="Sign and send!", command=sign_and_send
+    )
+    sign_button.config(bg="#E4E2E2", fg="#000")
+    sign_button.pack(padx=10)
+
+
+def open_show_keys(parent_window):
+    parent_window.destroy()
+    show_keys_window = tk.Toplevel(main)
+    show_keys_window.title("Keys")
+    show_keys_window.geometry("400x300")
+    show_keys_window.config(bg="#E5E2E2")
+    label = tk.Label(
+        show_keys_window,
+        text="Current Keys:",
+        bg="#E4E2E2",
+        fg="#000",
+    )
+    label.pack(pady=10)
+
+    text_box = tk.Text(show_keys_window, height=15, width=60)
+    text_box.pack(pady=10)
+    text_box.insert(tk.END, f"Public Key: {public_key}\nPrivate key: {private_key}")
+
+
+def generate_new_keys():
+    # generates and updates the new rsa values
+    # need global to be able to change the values, without global it will create local varibles instead. If you are accessing it or adding/subtracting to it you dont need global. You need global when reassigning the object or deleting it.
+    global public_key, private_key, n_value, encrypted_messages_list, signed_messages_list
+    new_public_key, new_private_key, new_n_value = generate_rsa()
+    public_key = new_public_key
+    private_key = new_private_key
+    n_value = new_n_value
+
+    # deletes the old encrypted and signed messages, as can encrypt/decrypt/sign with the new keys
+    del encrypted_messages_list, signed_messages_list
+    messagebox.showinfo("Operation successful", "New RSA keys generated")
+
+
 def open_owner_window():
     owner_window = tk.Toplevel(main)
     owner_window.title("Owner")
@@ -211,16 +366,26 @@ def open_owner_window():
     decrypt_message_button.config(bg="#E4E2E2", fg="#000")
     decrypt_message_button.pack(pady=10)
 
-    sign_button = tk.Button(master=owner_window, text="2. Digitally sign a message")
+    sign_button = tk.Button(
+        master=owner_window,
+        text="2. Digitally sign a message",
+        command=lambda: open_sign_message(owner_window),
+    )
     sign_button.config(bg="#E4E2E2", fg="#000")
     sign_button.pack(pady=10)
 
-    show_keys_button = tk.Button(master=owner_window, text="3. Show the keys")
+    show_keys_button = tk.Button(
+        master=owner_window,
+        text="3. Show the keys",
+        command=lambda: open_show_keys(owner_window),
+    )
     show_keys_button.config(bg="#E4E2E2", fg="#000")
     show_keys_button.pack(pady=10)
 
     generate_keys_button = tk.Button(
-        master=owner_window, text="4. Generate a new set of the keys"
+        master=owner_window,
+        text="4. Generate a new set of the keys",
+        command=generate_new_keys,
     )
     generate_keys_button.config(bg="#E4E2E2", fg="#000")
     generate_keys_button.pack(pady=10)
@@ -258,7 +423,11 @@ button = tk.Button(
 button.config(bg="#E4E2E2", fg="#000")
 button.pack(pady=10)
 
-button1 = tk.Button(master=frame, text="3. Exit", command=main.quit)
+button1 = tk.Button(
+    master=frame,
+    text="3. Exit",
+    command=lambda: (messagebox.showinfo("Exiting...", "Bye for now!"), main.quit()),
+)
 button1.config(bg="#E4E2E2", fg="#000")
 button1.pack(pady=10)
 
