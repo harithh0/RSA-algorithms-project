@@ -50,7 +50,7 @@ def open_authenticate_digital_signature(parent_window):
     parent_window.destroy()
     auth_message_window = tk.Toplevel(main)
     auth_message_window.title("Decrypt message")
-    auth_message_window.geometry("400x300")
+    auth_message_window.geometry("500x400")
     auth_message_window.config(bg="#E4E2E2")
     label = tk.Label(
         auth_message_window,
@@ -60,9 +60,17 @@ def open_authenticate_digital_signature(parent_window):
     )
     label.pack(pady=10)
 
+    entry_label = tk.Label(
+        auth_message_window,
+        text="Enter message number:",
+        bg="#E4E2E2",
+        fg="#000",
+    )
+
     text_box = tk.Text(auth_message_window, height=10, width=40)
     text_box.pack(pady=10)
 
+    entry_label.pack(pady=5)
     if len(signed_messages_list) == 0:
         text_box.insert(tk.END, "No messages available")
     # Insert all encrypted messages into the text box
@@ -201,6 +209,7 @@ def open_send_enc_message(parent_window):
     # encrypt_button = tk.Button(
     #     send_enc_message_window, text="Encrypt!", command=encrypt_and_display
     # )
+
     encrypt_button = tk.Button(
         send_enc_message_window, text="Encrypt and send!", command=encrypt_and_send
     )
@@ -212,7 +221,7 @@ def open_decrypt_message(parent_window):
     parent_window.destroy()
     decrypt_message_window = tk.Toplevel(main)
     decrypt_message_window.title("Decrypt message")
-    decrypt_message_window.geometry("400x300")
+    decrypt_message_window.geometry("500x400")
     decrypt_message_window.config(bg="#E4E2E2")
     label = tk.Label(
         decrypt_message_window,
@@ -274,8 +283,17 @@ def open_decrypt_message(parent_window):
         decrypt_message_window, text="Decrypt!", command=decrypt_and_display
     )
 
+    entry_label = tk.Label(
+        decrypt_message_window,
+        text="Enter message number:",
+        bg="#E4E2E2",
+        fg="#000",
+    )
+
+    entry_label.pack(pady=5)
     index_selected_box = tk.Entry(decrypt_message_window, width=10)
     index_selected_box.pack(padx=5)
+
 
     decrypt_button = tk.Button(
         decrypt_message_window, text="Decrypt!", command=decrypt_and_display
