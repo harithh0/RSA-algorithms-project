@@ -63,6 +63,8 @@ def open_authenticate_digital_signature(parent_window):
     text_box = tk.Text(auth_message_window, height=10, width=40)
     text_box.pack(pady=10)
 
+    if len(signed_messages_list) == 0:
+        text_box.insert(tk.END, "No messages available")
     # Insert all encrypted messages into the text box
     index = 0
     for message in signed_messages_list:
@@ -98,6 +100,7 @@ def open_authenticate_digital_signature(parent_window):
                 "Message Verification Failed",
                 "The message signature does not match correctly",
             )
+
         # Create a new window to display the decrypted message
         # verify_message_window = tk.Toplevel(decrypt_message_window)
         # verify_message_window.title("Decrypted Message")
@@ -145,6 +148,7 @@ def open_send_enc_message(parent_window):
     text_box = tk.Text(send_enc_message_window, height=10, width=40)
     text_box.pack(pady=10)
 
+    # Old version
     # def encrypt_and_display():
     #     message = text_box.get("1.0", tk.END)
     #     encrypted_message = operations.encrypt_message(message, public_key, n_value)
@@ -221,6 +225,8 @@ def open_decrypt_message(parent_window):
     text_box = tk.Text(decrypt_message_window, height=10, width=40)
     text_box.pack(pady=10)
 
+    if len(encrypted_messages_list) == 0:
+        text_box.insert(tk.END, "No encrypted messages available")
     # Insert all encrypted messages into the text box
     index = 0
     for message in encrypted_messages_list:
