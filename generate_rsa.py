@@ -1,31 +1,77 @@
 import math
 import random
 
-# TWO RSA primes
-P_VALUE = 163157151149139137
-Q_VALUE = 115578717622022981
+#  RSA primes
+n1 = 100000000000000000
+n2 = 155555555555555555
+n3 = 199999999999999999
 
 
-# Function to find a valid public exponent e
+def pseudo_prime(n1, n2, k=10):
+    # finds a pseudo-prime between n1 and n2 using Fermat's test.
+    while True:
+        p = random.randint(n1, n2)
+
+        if p % 2 == 0:
+            p += 1
+
+        if fermat_test(p, k):
+            return p
+
+
+# fermat’s primality test
+def fermat_test(p, k=10):
+    if p < 2:
+        return False
+    for _ in range(k):
+        a = random.randint(2, p - 1)
+        if pow(a, p - 1, p) != 1:
+            return False
+    return True
+
+
+# find pseudo-prime
+p = pseudo_prime(n1, n2)
+q = pseudo_prime(n2, n3)
+
+
+# finds a valid public exponent e
 def find_e(f):
     while True:
-        e = random.randrange(3, f, 2)  # Pick a random odd number (avoids even factors)
-        if math.gcd(e, f) == 1:  # Check if  coprime
+        e = random.randrange(3, f, 2)
+        if math.gcd(e, f) == 1:
             return e
+
+
+def extended_gcd(a, b):
+    # returns gcd(a, b) and the coefficients x, y such that ax + by = gcd(a, b)
+    if a == 0:
+        return b, 0, 1
+    gcd, x1, y1 = extended_gcd(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    return gcd, x, y
+
+
+def mod_inverse(e, phi):
+    gcd, x, _ = extended_gcd(e, phi)
+    if gcd != 1:
+        raise ValueError("Modular inverse does not exist")
+    return x % phi
 
 
 def generate_rsa():
 
-    # Compute n and Euler's totient function φ(n)
-    n_value = P_VALUE * Q_VALUE
-    f_value = (P_VALUE - 1) * (Q_VALUE - 1)  # φ(n)
+    # computes  n and Euler's totient function φ(n)
+    n_value = p * q
+    f = (p - 1) * (q - 1)  # φ(n)
 
-    public_key = find_e(f_value)
-    # Compute d using the modular inverse calculation from d*e(mod(f))==1
-    private_key = pow(public_key, -1, f_value)  # d=(e^-1)(mod(f))
+    # find public exponent e using math.gcd function
+    public_key = find_e(f)
 
-    # print(f"Chosen public key e: {public_key}")
-    # print(f"The value of d: {d}")
+    # computes  d using the modular inverse calculation from d*e(mod(f))==1
+    private_key = mod_inverse(public_key, f)
+
     return (public_key, private_key, n_value)
 
 
