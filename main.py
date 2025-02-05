@@ -294,7 +294,6 @@ def open_decrypt_message(parent_window):
     index_selected_box = tk.Entry(decrypt_message_window, width=10)
     index_selected_box.pack(padx=5)
 
-
     decrypt_button = tk.Button(
         decrypt_message_window, text="Decrypt!", command=decrypt_and_display
     )
@@ -366,7 +365,8 @@ def generate_new_keys():
     n_value = new_n_value
 
     # deletes the old encrypted and signed messages, as can encrypt/decrypt/sign with the new keys
-    del encrypted_messages_list, signed_messages_list
+    encrypted_messages_list = []
+    signed_messages_list = []
     messagebox.showinfo("Operation successful", "New RSA keys generated")
 
 

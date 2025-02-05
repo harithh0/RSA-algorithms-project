@@ -16,9 +16,9 @@ def encrypt_message(message, public_key, n_value, block_size=4):
         for c in message:
             ascii_to_binary_string = format(ord(c), "08b")
             if len(ascii_to_binary_string) > 8:  # special ascii character
-                print("Please enter ASCII only charecters")
-                break
-
+                # A non-ascii character has been found as it is greater than 8 bits long
+                # for now we will just replace it with a null value
+                binary_values.append(format(0, "08b"))
             else:
                 error = 1
                 binary_values.append(ascii_to_binary_string)
