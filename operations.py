@@ -1,4 +1,7 @@
-def encrypt_message(message, public_key, n_value, block_size=4):
+BLOCK_SIZE = 4
+
+
+def encrypt_message(message, public_key, n_value):
     """
     encrypts user provided text/string
 
@@ -25,7 +28,7 @@ def encrypt_message(message, public_key, n_value, block_size=4):
 
     # adds null values (0) at the end of list to make it have correct amount of blocks if needed
     # each block must have 4 characters or 4 bytes (32 bits) if short then it will add 0s
-    while len(binary_values) % block_size != 0:
+    while len(binary_values) % BLOCK_SIZE != 0:
         binary_values.append(format(0, "08b"))
 
     full_ciphertext = ""
@@ -33,12 +36,11 @@ def encrypt_message(message, public_key, n_value, block_size=4):
     # goes through 0-to-length of the binary values list by 4
     # so in short it goes like this: we have [10s, 10s, 10s, 10s, 10s, 10s and so on...], each space repersenting the binary form of a character
     # we have exactly even amount divisible by 4
-    for i in range(0, len(binary_values), block_size):
+    for i in range(0, len(binary_values), BLOCK_SIZE):
         # takes the 4 values and turns them into a complete string
         # ex: first binary characters will be turned from list format [10,10,10,10] -> 10101010 to combined string
-        block_to_encrypt_bytes = "".join(binary_values[i : i + block_size])
+        block_to_encrypt_bytes = "".join(binary_values[i : i + BLOCK_SIZE])
 
-        print(block_to_encrypt_bytes)
 
         # encrypts this binary string called enc_w
         enc_w = pow(int(block_to_encrypt_bytes), public_key, n_value)
@@ -88,7 +90,7 @@ def find_block(encrypted_message):
         return current_block, encrypted_message[current_block_true_size + 2 :]
 
 
-def decrypt_message(encrypted_message, private_key, n_value, block_size=4):
+def decrypt_message(encrypted_message, private_key, n_value):
     """
     decrypts complete encrypted message
 
@@ -119,16 +121,20 @@ def decrypt_message(encrypted_message, private_key, n_value, block_size=4):
     # after extracting all the blocks, we will loop to each block and decrypt it from ciphertext -> binary -> then change it to ascii
     for block in blocks:
         decrypted = pow(int(block), private_key, n_value)
-        print("Decrypted before conversion: ", decrypted)
         decrypted = str(decrypted)
         if len(decrypted) % 8 != 0:
-            decrypted = decrypted.zfill(32)
-        print("decrypted: ", decrypted)
+            decrypted = decrypted.zfill(
+                32
+            )  # if for some reason the leading zeros are missing
+        # goes through each block
+        # len(decrypted) will be 32 bits (4 characters)
+        # so it will go by 8 : 0-7 (8 bits), 8-15 (8 bits), 16-23 (8 bits), 24-31 (8 bits)
         for i in range(0, len(decrypted), 8):
-            byte = decrypted[i : i + 8]
-            binary_int = int(byte, 2)
-            plaintext += chr(binary_int)
-            print(f"byte: {byte} binary_int: {binary_int}")
+            byte = decrypted[
+                i : i + 8
+            ]  # 0 - 8 [inclusive, exclusive] (so its actaully getting values from index 0-7 ) and so on..
+            binary_int = int(byte, 2)  # converts to decmial from binary
+            plaintext += chr(binary_int)  # converts to ASCII from decmial
 
     return plaintext
 
